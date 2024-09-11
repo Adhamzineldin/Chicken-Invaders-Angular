@@ -1,0 +1,10 @@
+<div class="final-score-overlay">
+  <div class="final-score-container">
+    <h1>Game Over</h1>
+    <p>Your final score: {{ getFinalScore() }}</p>
+    <p>Your highest score: {{ getHighestScore(AppComponent.getMode()) }}</p>
+    <button (click)="playAgain()" class="play-again-button">Play Again</button>
+    <button (click)="goBackToMenu()" class="play-again-button">Main Menu</button>
+
+  </div>
+</div>
