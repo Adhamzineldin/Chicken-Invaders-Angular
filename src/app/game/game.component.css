@@ -40,6 +40,26 @@ body {
     animation: chicken 1s infinite linear alternate;
     z-index: 20;
 }
+.chicken {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-image: url("images/game/Chicken.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: chicken 1s infinite linear alternate;
+    z-index: 20;
+}
+
+
+.chicken, .egg, .rocket, .bullet {
+  position: absolute;
+  width: 5vw;
+  height: 5vw;
+}
+
+
 
 @keyframes chicken {
     from {

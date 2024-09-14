@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {AppComponent} from "../app.component";
 import {MenuComponent} from "../menu/menu.component";
 import {GameComponent} from "../game/game.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'game-over',
@@ -11,6 +12,12 @@ import {GameComponent} from "../game/game.component";
   styleUrl: './game-over.component.css'
 })
 export class GameOverComponent {
+
+  constructor(private router: Router) {
+
+  }
+
+
 static finalScore: number = 0;
 static highestScore = {
   "easy": 0,
@@ -45,18 +52,20 @@ static localStorage: Storage = window.localStorage;
     GameOverComponent.finalScore = score;
     if ( GameOverComponent.finalScore > GameOverComponent.highestScore[difficulty]) {
       GameOverComponent.highestScore[difficulty] = GameOverComponent.finalScore;
-
       this.localStorage[this.localStorageKey] = JSON.stringify(GameOverComponent.highestScore);
     }
+
   }
 
   playAgain() {
     AppComponent.getGameComponent().restartGame();
+    this.router.navigate(['/game']).then(r => console.log("Game Restarted"));
 
   }
 
   goBackToMenu() {
     AppComponent.page = "menu";
+    this.router.navigate(['menu']).then(r => console.log("Navigated to menu"));
   }
 
   protected readonly AppComponent = AppComponent;

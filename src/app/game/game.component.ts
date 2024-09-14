@@ -2,12 +2,16 @@ import { Component, HostListener, OnInit, ElementRef } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import { AppComponent } from '../app.component';
 import {GameOverComponent} from "../game-over/game-over.component";
+import {ActivatedRoute, Router, RouterOutlet} from "@angular/router";
 
 @Component({
   selector: 'chicken-game',
   standalone: true,
-  encapsulation: ViewEncapsulation.None ,
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './game.component.html',
+  imports: [
+    RouterOutlet
+  ],
   styleUrls: ['./game.component.css'] // Fixed styleUrls (was styleUrl)
 })
 export class GameComponent implements OnInit {
@@ -26,7 +30,7 @@ export class GameComponent implements OnInit {
   mode: string = "easy";
   gameLoopVariable: any = null;
   static isGameOver = false;
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef, private router: Router,private route: ActivatedRoute) {}
 
 
 
@@ -232,7 +236,8 @@ export class GameComponent implements OnInit {
       clearInterval(interval);
     });
     GameComponent.isGameOver = true;
-    GameOverComponent.endGame(this.score, this.mode as 'easy' | 'medium' | 'hard') ;
+    GameOverComponent.endGame(this.score, this.mode as 'easy' | 'medium' | 'hard');
+    this.router.navigate(['game-over'], { relativeTo: this.route }).then(r => console.log(r));
 
 
 

@@ -1,13 +1,3 @@
-@if (getPage() == "menu"){
-  <app-menu></app-menu>
-} @else if (getPage() == "startGame"){
-
-  <chicken-game id="chicken-game-component"> </chicken-game>
-
-  @if (GameComponent.getIsGameOver()) {
-      <game-over></game-over>
-  }
-}
-
+<router-outlet></router-outlet>
 
 
