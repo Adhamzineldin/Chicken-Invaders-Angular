@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit, ElementRef } from '@angular/core';
-import { ViewEncapsulation } from '@angular/core';
-import { AppComponent } from '../app.component';
+import {Component, HostListener, OnInit, ElementRef} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
+import {AppComponent} from '../app.component';
 import {GameOverComponent} from "../game-over/game-over.component";
 import {ActivatedRoute, Router, RouterOutlet} from "@angular/router";
 
@@ -16,23 +16,23 @@ import {ActivatedRoute, Router, RouterOutlet} from "@angular/router";
 })
 export class GameComponent implements OnInit {
   score: number = 0;
-  rocketStep: number = 5;
+  rocketStep: number = 0.3;
   canShoot: boolean = true;
   shootCooldown: number = 100;
   eggIntervalId: any[] = [];
   eggInterval: any[] = [];
-  offSet: number = 20;
+  offSet: number = 3 * (window.innerWidth / 100);
   keys: any = {};
   main: HTMLElement | null = null;
   scoreBoard: HTMLElement | null = null;
   rocket: HTMLElement | null = null;
-  eggSpawnRate: number = 40 ;
+  eggSpawnRate: number = 40;
   mode: string = "easy";
   gameLoopVariable: any = null;
   static isGameOver = false;
-  constructor(private el: ElementRef, private router: Router,private route: ActivatedRoute) {}
 
-
+  constructor(private el: ElementRef, private router: Router, private route: ActivatedRoute) {
+  }
 
 
   restartGame() {
@@ -59,16 +59,14 @@ export class GameComponent implements OnInit {
   }
 
 
-  setDifficultyVariables(){
+  setDifficultyVariables() {
     if (this.getMode() === 'hard') {
       this.eggSpawnRate = 20;
       this.shootCooldown = 200;
-    }
-    else if (this.getMode() === 'medium') {
+    } else if (this.getMode() === 'medium') {
       this.eggSpawnRate = 30;
       this.shootCooldown = 100;
-    }
-    else if (this.getMode() === 'easy') {
+    } else if (this.getMode() === 'easy') {
       this.eggSpawnRate = 40;
       this.shootCooldown = 10;
     }
@@ -94,36 +92,41 @@ export class GameComponent implements OnInit {
     AppComponent.playAgain = false;
 
     if (this.rocket) {
-      this.rocket.style.left = '870px';
-      this.rocket.style.top = '800px';
+
+      this.rocket.style.left = '45vw';
+      this.rocket.style.top = '90vh';
+      this.rocket.style.width = '6vw';
+      this.rocket.style.height = '10vh';
     }
     this.refreshChickens();
-    if (this.gameLoopVariable == null){
+    if (this.gameLoopVariable == null) {
       this.gameLoopVariable = requestAnimationFrame(() => this.gameLoop());
     }
 
   }
+
   updateScore() {
     if (this.scoreBoard) {
       this.scoreBoard.innerHTML = `Score: ${this.score}`;
     }
   }
+
   refreshChickens() {
 
     if (this.eggSpawnRate > 15) {
       this.eggSpawnRate -= 2;
     }
-    let posx = 100;
-    let posy = 0;
+    let positionX;
+    let positionY = 0;
     for (let i = 0; i < 4; i++) {
-      posx = 100;
-      posy += 100;
+      positionX = 0;
+      positionY += 10;
       for (let j = 0; j < 15; j++) {
-        posx += 100;
+        positionX += 6;
         const div = document.createElement('div');
         div.classList.add('chicken');
-        div.style.left = `${posx}px`;
-        div.style.top = `${posy}px`;
+        div.style.left = `${positionX}vw`;
+        div.style.top = `${positionY}vh`;
         this.main?.appendChild(div);
       }
     }
@@ -137,21 +140,36 @@ export class GameComponent implements OnInit {
         if (Math.floor(Math.random() * this.eggSpawnRate) === 1 && !GameComponent.isGameOver) {
           const egg = document.createElement('div');
           egg.classList.add('egg');
-          egg.style.left = `${(parseInt(chicken.style.left) || 0) + 25}px`;
-          egg.style.top = chicken.style.top;
+
+          chicken.style.width = '6vw';
+          chicken.style.height = '10vh';
+
+          const chickenLeft = parseFloat(chicken.style.left) || 0;
+          const chickenTop = parseFloat(chicken.style.top) || 0;
+
+          const chickenCenterX = chickenLeft + (parseFloat(chicken.style.width) / 2);
+          const chickenCenterY = chickenTop + (parseFloat(chicken.style.height) / 2);
+
+
+          egg.style.position = 'absolute';
+          egg.style.left = `${chickenCenterX}vw`;
+          egg.style.top = `${chickenCenterY}vh`;
+          egg.style.transform = 'translate(-50%, -50%)';
+
           this.main?.appendChild(egg);
           this.moveEgg(egg);
         }
       });
     }, 1000);
     this.eggIntervalId.push(eggIntervalIdTemp);
-
   }
 
+
   moveEgg(egg: HTMLElement) {
-    let eggStep = 5;
+    let eggStep = 0.5;
     const eggIntervalTemp = setInterval(() => {
-      egg.style.top = `${(parseInt(egg.style.top) || 0) + eggStep}px`;
+      const eggTop = parseFloat(egg.style.top) || 0;
+      egg.style.top = `${eggTop + eggStep}vh`;
 
       if (parseInt(egg.style.top) >= window.innerHeight) {
         clearInterval(eggIntervalTemp);
@@ -180,20 +198,32 @@ export class GameComponent implements OnInit {
   shootBullet() {
     const bullet = document.createElement('div');
     bullet.classList.add('bullet');
+
     if (this.rocket) {
-      bullet.style.left = `${(parseInt(this.rocket.style.left) || 0) + 45}px`;
-      bullet.style.top = this.rocket.style.top;
+      const rocketLeft = parseFloat(this.rocket.style.left) || 0;
+      const rocketTop = parseFloat(this.rocket.style.top) || 0;
+
+      const rocketCenterX = rocketLeft + (parseFloat(this.rocket.style.width) / 2);
+      const rocketCenterY = rocketTop + (parseFloat(this.rocket.style.height) / 2);
+
+
+      bullet.style.position = 'absolute';
+      bullet.style.left = `${rocketCenterX}vw`;
+      bullet.style.top = `${rocketCenterY}vh`;
+      bullet.style.transform = 'translate(-50%, -50%)';
+
+      this.main?.appendChild(bullet);
+      this.moveBullet(bullet);
     }
-    this.main?.appendChild(bullet);
-    this.moveBullet(bullet);
   }
 
-  moveBullet(bullet: HTMLElement) {
-    let bulletStep = 10;
-    const bulletInterval = setInterval(() => {
-      bullet.style.top = `${(parseInt(bullet.style.top) || 0) - bulletStep}px`;
 
-      const bulletRect = bullet.getBoundingClientRect();
+  moveBullet(bullet: HTMLElement) {
+    let bulletStep = 0.5;
+    const bulletInterval = setInterval(() => {
+      const bulletTop = parseFloat(bullet.style.top) || 0;
+      bullet.style.top = `${bulletTop - bulletStep}vh`;
+
       const chickens = this.el.nativeElement.querySelectorAll('.chicken');
       chickens.forEach((chicken: HTMLElement) => {
         if (this.isCollision(bullet, chicken)) {
@@ -237,8 +267,7 @@ export class GameComponent implements OnInit {
     });
     GameComponent.isGameOver = true;
     GameOverComponent.endGame(this.score, this.mode as 'easy' | 'medium' | 'hard');
-    this.router.navigate(['game-over'], { relativeTo: this.route }).then(r => console.log(r));
-
+    this.router.navigate(['game-over'], {relativeTo: this.route}).then(r => console.log(r));
 
 
   }
@@ -251,22 +280,26 @@ export class GameComponent implements OnInit {
     const gameArea = this.main?.getBoundingClientRect();
     const rocketRect = this.rocket?.getBoundingClientRect();
 
+
     if (!gameArea || !rocketRect) return;
 
-    if ((this.keys['ArrowRight'] || this.keys['d']) && (rocketRect.right + this.offSet) < gameArea.right) {
-      this.rocket!.style.left = `${(parseInt(this.rocket!.style.left) || 0) + this.rocketStep}px`;
+    if ((this.keys['ArrowRight'] || this.keys['d']) && (rocketRect.right) < gameArea.right) {
+      this.rocket!.style.left = (parseFloat(this.rocket!.style.left) || 0) + this.rocketStep + 'vw';
+
     }
 
-    if ((this.keys['ArrowLeft'] || this.keys['a']) && (rocketRect.left - this.offSet) > gameArea.left) {
-      this.rocket!.style.left = `${(parseInt(this.rocket!.style.left) || 0) - this.rocketStep}px`;
+    if ((this.keys['ArrowLeft'] || this.keys['a']) && (rocketRect.left) > gameArea.left) {
+      this.rocket!.style.left = (parseFloat(this.rocket!.style.left) || 0) - this.rocketStep + 'vw';
+
     }
 
-    if ((this.keys['ArrowUp'] || this.keys['w']) && (rocketRect.top - this.offSet) > gameArea.top) {
-      this.rocket!.style.top = `${(parseInt(this.rocket!.style.top) || 0) - this.rocketStep}px`;
+    if ((this.keys['ArrowUp'] || this.keys['w']) && (rocketRect.top) > gameArea.top) {
+      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) - this.rocketStep + 'vh';
+
     }
 
-    if ((this.keys['ArrowDown'] || this.keys['s']) && (rocketRect.bottom + this.offSet) < gameArea.bottom) {
-      this.rocket!.style.top = `${(parseInt(this.rocket!.style.top) || 0) + this.rocketStep}px`;
+    if ((this.keys['ArrowDown'] || this.keys['s']) && (rocketRect.bottom) < gameArea.bottom) {
+      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) + this.rocketStep + 'vh';
     }
 
     const chickens = this.el.nativeElement.querySelectorAll('.chicken');
@@ -286,8 +319,8 @@ export class GameComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyDownEvent(event: KeyboardEvent) {
-    if (!GameComponent.isGameOver){
-    this.keys[event.key] = true;
+    if (!GameComponent.isGameOver) {
+      this.keys[event.key] = true;
     }
 
   }
@@ -296,6 +329,7 @@ export class GameComponent implements OnInit {
   keyUpEvent(event: KeyboardEvent) {
     this.keys[event.key] = false;
   }
+
 
   gameLoop() {
     this.handleMovement();

@@ -1,101 +1,85 @@
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .main {
-    min-height: 1000px;
-    min-width: 1000px;
-    background-image: url("images/game/Space.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-image: url("images/game/Space.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: visible;
+  position: relative;
 }
 
 .rocket {
-    position: absolute;
-    top: 65%;
-    left: 870px;
-    width: 70px;
-    height: 100px;
-    background-image: url("images/game/Rocket.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.chicken {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background-image: url("images/game/Chicken.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    animation: chicken 1s infinite linear alternate;
-    z-index: 20;
-}
-.chicken {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background-image: url("images/game/Chicken.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    animation: chicken 1s infinite linear alternate;
-    z-index: 20;
-}
-
-
-.chicken, .egg, .rocket, .bullet {
   position: absolute;
-  width: 5vw;
-  height: 5vw;
+  top: 90vh;
+  left: 45vw;
+  width: 6vw;
+  height: 10vh;
+  background-image: url("images/game/Rocket.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
+.chicken {
+  position: absolute;
+  width: 6vw;
+  height: 10vh;
+  background-image: url("images/game/Chicken.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: chicken 1s infinite linear alternate;
+  z-index: 20;
+}
 
 
 @keyframes chicken {
-    from {
-        transform: translateY(0);
-    }
-    to {
-        transform: translateY(20px);
-    }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(20px);
+  }
 }
 
 .bullet {
-    position: absolute;
-    width: 10px;
-    height: 30px;
-    background-color: yellow;
-    border-radius: 50%;
-    animation: bullet 5s infinite linear alternate;
+  position: absolute;
+  width: 0.5vw;
+  height: 3vh;
+  background-color: yellow;
+  border-radius: 50%;
+  animation: bullet 5s infinite linear alternate;
 }
 
 #score {
-    position: absolute;
-    top: 10px;
-    left: 90%;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
+  position: absolute;
+  top: 2vh;
+  left: 90vw;
+  color: white;
+  font-size: 2vw;
+  font-weight: bold;
+  transform: translateX(-50%);
 }
 
 .egg {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-image: url("images/game/egg.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+  position: absolute;
+  width: 3vw;
+  height: 5vh;
+  background-image: url("images/game/egg.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 
 }
 
