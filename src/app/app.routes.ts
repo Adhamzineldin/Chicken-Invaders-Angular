@@ -7,11 +7,13 @@ import {NotFoundComponent} from "./not-found/not-found.component";
 export const routes: Routes = [
   {
     path: '',
-    component: MenuComponent
+    component: MenuComponent,
+    data: {title: "Adham's Website"}
   },
   {
     path: 'menu',
-    component: MenuComponent
+    component: MenuComponent,
+    data: {title: "Game Menu"}
   },
   {
     path: 'game',
@@ -19,13 +21,16 @@ export const routes: Routes = [
     children: [
       {
         path: 'game-over',
-        component: GameOverComponent
+        component: GameOverComponent,
+        data: {title: "Game Over"}
       }
-    ]
+    ],
+    data: {title: "Chicken Game"}
   },
   {
     path: '**',
-    component: NotFoundComponent
+    component: NotFoundComponent,
+    data: {title: "Page Not Found"}
   }
 
 

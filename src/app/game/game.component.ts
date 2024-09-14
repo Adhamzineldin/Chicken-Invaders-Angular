@@ -4,6 +4,7 @@ import {AppComponent} from '../app.component';
 import {GameOverComponent} from "../game-over/game-over.component";
 import {ActivatedRoute, Router, RouterOutlet} from "@angular/router";
 
+
 @Component({
   selector: 'chicken-game',
   standalone: true,
