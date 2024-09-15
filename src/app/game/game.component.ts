@@ -22,6 +22,7 @@ export class GameComponent implements OnInit {
   shootCooldown: number = 100;
   eggIntervalId: any[] = [];
   eggInterval: any[] = [];
+  bulletsInterval: any[] = [];
   offSet: number = 3 * (window.innerWidth / 100);
   keys: any = {};
   main: HTMLElement | null = null;
@@ -31,10 +32,40 @@ export class GameComponent implements OnInit {
   mode: string = "easy";
   gameLoopVariable: any = null;
   static isGameOver = false;
+  bulletIntervalTime: number = 15;
+  eggIntervalTime: number = 30;
 
   constructor(private el: ElementRef, private router: Router, private route: ActivatedRoute) {
   }
 
+  @HostListener('blur', ['$event'])
+  pauseGame() {
+    cancelAnimationFrame(this.gameLoopVariable);
+    GameComponent.isGameOver = true;
+    for (let i = 0; i < this.eggInterval.length; i++) {
+      clearInterval(this.eggInterval[i]);
+    }
+    for (let i = 0; i < this.bulletsInterval.length; i++) {
+      clearInterval(this.bulletsInterval[i]);
+    }
+
+    this.router.navigate(['game-paused'], {relativeTo: this.route}).then(r => console.log(r));
+  }
+
+  resumeGame() {
+    GameComponent.isGameOver = false;
+    let eggs = this.el.nativeElement.querySelectorAll('.egg');
+    let bullets = this.el.nativeElement.querySelectorAll('.bullet');
+    for (let i = 0; i < eggs.length; i++) {
+      this.moveEgg(eggs[i]);
+    }
+    for (let i = 0; i < bullets.length; i++) {
+      this.moveBullet(bullets[i]);
+    }
+
+    this.router.navigate(['game']).then(r => console.log(r));
+
+  }
 
   restartGame() {
     this.el.nativeElement.querySelectorAll('.chicken').forEach((chicken: HTMLElement) => {
@@ -83,6 +114,7 @@ export class GameComponent implements OnInit {
     GameComponent.isGameOver = false;
     this.setDifficultyVariables()
     AppComponent.gameObject = this;
+    window.addEventListener('blur', this.onBlur.bind(this));
     this.init();
   }
 
@@ -185,7 +217,7 @@ export class GameComponent implements OnInit {
         this.gameOver();
         egg.remove();
       }
-    }, 30);
+    }, this.eggIntervalTime);
     this.eggInterval.push(eggIntervalTemp);
   }
 
@@ -244,7 +276,9 @@ export class GameComponent implements OnInit {
       if (chickens.length === 0) {
         this.refreshChickens();
       }
-    }, 15);
+    }, this.bulletIntervalTime);
+    this.bulletsInterval.push(bulletInterval);
+
   }
 
   isCollision(element1: HTMLElement, element2: HTMLElement): boolean {
@@ -280,6 +314,7 @@ export class GameComponent implements OnInit {
   handleMovement() {
     const gameArea = this.main?.getBoundingClientRect();
     const rocketRect = this.rocket?.getBoundingClientRect();
+    const rocketStepForHeight = this.rocketStep * 1.9;
 
 
     if (!gameArea || !rocketRect) return;
@@ -295,12 +330,16 @@ export class GameComponent implements OnInit {
     }
 
     if ((this.keys['ArrowUp'] || this.keys['w']) && (rocketRect.top) > gameArea.top) {
-      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) - this.rocketStep + 'vh';
+      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) - rocketStepForHeight + 'vh';
 
     }
 
     if ((this.keys['ArrowDown'] || this.keys['s']) && (rocketRect.bottom) < gameArea.bottom) {
-      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) + this.rocketStep + 'vh';
+      this.rocket!.style.top = (parseFloat(this.rocket!.style.top) || 0) + rocketStepForHeight + 'vh';
+    }
+
+    if (this.keys['Escape']) {
+      this.pauseGame();
     }
 
     const chickens = this.el.nativeElement.querySelectorAll('.chicken');
@@ -329,6 +368,10 @@ export class GameComponent implements OnInit {
   @HostListener('window:keyup', ['$event'])
   keyUpEvent(event: KeyboardEvent) {
     this.keys[event.key] = false;
+  }
+
+  onBlur() {
+    this.pauseGame();
   }
 
 

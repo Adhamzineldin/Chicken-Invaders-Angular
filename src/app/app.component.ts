@@ -27,11 +27,11 @@ export class AppComponent {
   ngOnInit() {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),  // Only trigger on route changes
+        filter(event => event instanceof NavigationEnd),
         map(() => {
           let route = this.activatedRoute;
           while (route.firstChild) {
-            route = route.firstChild;  // Keep going deeper to the active child
+            route = route.firstChild;
           }
           return route;
         }),
@@ -39,9 +39,9 @@ export class AppComponent {
       )
       .subscribe(data => {
         if (data && data['title']) {
-          this.titleService.setTitle(data['title']);  // Set the title from the child route
+          this.titleService.setTitle(data['title']);
         } else {
-          this.titleService.setTitle('Default Title');  // Default title if none is found
+          this.titleService.setTitle('Default Title');
         }
       });
 
