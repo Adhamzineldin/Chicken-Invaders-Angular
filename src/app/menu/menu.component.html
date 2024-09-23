@@ -2,8 +2,12 @@
   <div class="menu-container">
     <h1>Welcome to the Game</h1>
     <p>Are you ready to start?</p>
-    <p style="color: red">Difficulty Affects shot CD and eggs spawn rate</p>
+    <p style="color: red">Difficulty affects shot CD, eggs spawn rate, and lives.</p>
 
+    <label for="name-input">Name:</label>
+    <input id="name-input" type="text" placeholder="name" value="{{AppComponent.name}}">
+
+    <button (click)="topScores()" class="menu-button" style="background-color: #cc0000">Top Scores</button>
     <button (click)="startGame('hard')" class="menu-button">Hard</button>
     <button (click)="startGame('medium')" class="menu-button">Medium</button>
     <button (click)="startGame('easy')" class="menu-button">Easy</button>

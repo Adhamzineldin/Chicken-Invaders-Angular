@@ -3,6 +3,7 @@ import {ViewEncapsulation} from '@angular/core';
 import {AppComponent} from '../app.component';
 import {GameOverComponent} from "../game-over/game-over.component";
 import {ActivatedRoute, Router, RouterOutlet} from "@angular/router";
+import {IpService} from "../ip.service";
 
 
 @Component({
@@ -23,7 +24,7 @@ export class GameComponent implements OnInit {
   eggIntervalId: any[] = [];
   eggInterval: any[] = [];
   bulletsInterval: any[] = [];
-  offSet: number = 3 * (window.innerWidth / 100);
+  offSet: number = 2.5 * (window.innerWidth / 100);
   keys: any = {};
   main: HTMLElement | null = null;
   scoreBoard: HTMLElement | null = null;
@@ -34,11 +35,13 @@ export class GameComponent implements OnInit {
   static isGameOver = false;
   bulletIntervalTime: number = 15;
   eggIntervalTime: number = 30;
+  lives: number = 7;
+  immune = false;
 
-  constructor(private el: ElementRef, private router: Router, private route: ActivatedRoute) {
+  constructor(private el: ElementRef, private router: Router, private route: ActivatedRoute, private ipService: IpService) {
   }
 
-  @HostListener('blur', ['$event'])
+
   pauseGame() {
     cancelAnimationFrame(this.gameLoopVariable);
     GameComponent.isGameOver = true;
@@ -71,8 +74,11 @@ export class GameComponent implements OnInit {
     this.el.nativeElement.querySelectorAll('.chicken').forEach((chicken: HTMLElement) => {
       chicken.remove();
     });
-    this.el.nativeElement.querySelectorAll('.egg').forEach((chicken: HTMLElement) => {
-      chicken.remove();
+    this.el.nativeElement.querySelectorAll('.egg').forEach((egg: HTMLElement) => {
+      egg.remove();
+    });
+    this.el.nativeElement.querySelectorAll('.bullet').forEach((bullet: HTMLElement) => {
+      bullet.remove();
     });
     GameComponent.isGameOver = false;
     AppComponent.playAgain = false;
@@ -95,17 +101,21 @@ export class GameComponent implements OnInit {
     if (this.getMode() === 'hard') {
       this.eggSpawnRate = 20;
       this.shootCooldown = 200;
+      this.lives = 3;
     } else if (this.getMode() === 'medium') {
       this.eggSpawnRate = 30;
-      this.shootCooldown = 100;
+      this.shootCooldown = 125;
+      this.lives = 5;
     } else if (this.getMode() === 'easy') {
       this.eggSpawnRate = 40;
-      this.shootCooldown = 10;
+      this.shootCooldown = 75;
+      this.lives = 7;
     }
   }
 
 
   ngOnInit(): void {
+    AppComponent.ipAddress = this.ipService.getIpAddress();
     AppComponent.playAgain = false;
     this.main = this.el.nativeElement.querySelector('#main-game');
     this.scoreBoard = this.el.nativeElement.querySelector('#score');
@@ -127,7 +137,7 @@ export class GameComponent implements OnInit {
     if (this.rocket) {
 
       this.rocket.style.left = '45vw';
-      this.rocket.style.top = '90vh';
+      this.rocket.style.top = '80vh';
       this.rocket.style.width = '6vw';
       this.rocket.style.height = '10vh';
     }
@@ -136,6 +146,19 @@ export class GameComponent implements OnInit {
       this.gameLoopVariable = requestAnimationFrame(() => this.gameLoop());
     }
 
+    this.updateLives();
+
+
+  }
+
+  updateLives() {
+    const livesHtml = this.el.nativeElement.querySelector('#lives');
+    if (livesHtml) {
+      livesHtml.innerHTML = ``;
+      for (let i = 0; i < this.lives; i++) {
+        livesHtml.innerHTML += `❤️`;
+      }
+    }
   }
 
   updateScore() {
@@ -291,20 +314,52 @@ export class GameComponent implements OnInit {
   }
 
   gameOver() {
-    GameComponent.isGameOver = true;
-    cancelAnimationFrame(this.gameLoopVariable);
-    this.keys = {};
-    this.eggIntervalId.forEach((interval: any) => {
-      clearInterval(interval);
-    });
-    this.eggInterval.forEach((interval: any) => {
-      clearInterval(interval);
-    });
-    GameComponent.isGameOver = true;
-    GameOverComponent.endGame(this.score, this.mode as 'easy' | 'medium' | 'hard');
-    this.router.navigate(['game-over'], {relativeTo: this.route}).then(r => console.log(r));
+    if (this.immune) {
+      return;
+    }
+    this.immune = true;
+    let immuneHtml = this.el.nativeElement.querySelector('#immune');
+    if (immuneHtml) {
+      immuneHtml.innerHTML = `Immune for 3 seconds`;
+    }
+    setTimeout(() => {
+      this.immune = false;
+      if (immuneHtml) {
+        immuneHtml.innerHTML = ``;
+      }
+    }, 3000);
+    this.lives--;
+    this.updateLives();
+    if (this.lives === 0) {
+      GameComponent.isGameOver = true;
+      cancelAnimationFrame(this.gameLoopVariable);
+      this.keys = {};
+      this.eggIntervalId.forEach((interval: any) => {
+        clearInterval(interval);
+      });
+      this.eggInterval.forEach((interval: any) => {
+        clearInterval(interval);
+      });
+      this.bulletsInterval.forEach((interval: any) => {
+        clearInterval(interval);
+      });
+      GameComponent.isGameOver = true;
+      GameOverComponent.endGame(this.score, this.mode as 'easy' | 'medium' | 'hard');
+      this.router.navigate(['game-over'], {relativeTo: this.route}).then(r => console.log(r));
+    } else {
+      const eggs = this.el.nativeElement.querySelectorAll('.egg');
+      eggs.forEach((egg: HTMLElement) => {
+        egg.remove();
+      });
+      this.rocket!.style.left = '45vw';
+      this.rocket!.style.top = '80vh';
+    }
 
 
+  }
+
+  getDifficulty() {
+    return this.mode;
   }
 
   static getIsGameOver() {

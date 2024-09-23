@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AppComponent} from "../app.component";
 import {MenuComponent} from "../menu/menu.component";
 import {GameComponent} from "../game/game.component";
 import {Router} from "@angular/router";
+import {addWarning} from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
 
 @Component({
   selector: 'game-over',
@@ -18,16 +19,15 @@ export class GameOverComponent {
   }
 
 
-static finalScore: number = 0;
-static highestScore = {
-  "easy": 0,
-  "medium": 0,
-  "hard": 0
-}
+  static finalScore: number = 0;
+  static highestScore = {
+    "easy": 0,
+    "medium": 0,
+    "hard": 0
+  }
 
-static localStorage: Storage = window.localStorage;
- static localStorageKey: string = "chicken-game-scores";
-
+  static localStorage: Storage = window.localStorage;
+  static localStorageKey: string = "chicken-game-scores";
 
 
   static getFromLocalStorage() {
@@ -47,15 +47,41 @@ static localStorage: Storage = window.localStorage;
     return GameOverComponent.highestScore[difficulty];
   }
 
-  static endGame(score: number, difficulty:'easy' | 'medium' | 'hard') {
+  static async endGame(score: number, difficulty: 'easy' | 'medium' | 'hard') {
     this.getFromLocalStorage();
     GameOverComponent.finalScore = score;
-    if ( GameOverComponent.finalScore > GameOverComponent.highestScore[difficulty]) {
+
+    if (GameOverComponent.finalScore > GameOverComponent.highestScore[difficulty]) {
       GameOverComponent.highestScore[difficulty] = GameOverComponent.finalScore;
       this.localStorage[this.localStorageKey] = JSON.stringify(GameOverComponent.highestScore);
     }
 
+    const data = {
+      name: AppComponent.name,
+      score: score,
+      difficulty: difficulty
+    };
+
+    try {
+      let response = await fetch(`http://${AppComponent.ipAddress}:1338/api/scores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      let result = await response.json();
+      console.log('Score submitted successfully:', result);
+    } catch (error) {
+      console.error('Error submitting score:', error);
+    }
   }
+
 
   playAgain() {
     AppComponent.getGameComponent().restartGame();
@@ -66,6 +92,11 @@ static localStorage: Storage = window.localStorage;
   goBackToMenu() {
     AppComponent.page = "menu";
     this.router.navigate(['menu']).then(r => console.log("Navigated to menu"));
+  }
+
+  topScores() {
+    let difficulty = AppComponent.getGameComponent().getDifficulty();
+    this.router.navigate(['top-scores']).then(r => console.log("Navigated to top scores"));
   }
 
   protected readonly AppComponent = AppComponent;

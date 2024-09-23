@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db.js",
+  "scripts": {
+    "start": "nodemon db.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Adhamzineldin/Chicken-Invaders-Angular.git"
+  },
+  "private": true,
+  "dependencies": {
+    "mongodb": "^6.9.0"
+  }
+}

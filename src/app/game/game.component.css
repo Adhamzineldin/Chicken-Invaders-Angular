@@ -72,6 +72,25 @@ body {
   transform: translateX(-50%);
 }
 
+#lives {
+  position: absolute;
+  top: 2vh;
+  left: 2vw;
+  color: white;
+  font-size: 2vw;
+  font-weight: bold;
+}
+
+#immune {
+  position: absolute;
+  top: 2vh;
+  left: 40vw;
+  color: white;
+  font-size: 2vw;
+  font-weight: bold;
+}
+
+
 .egg {
   position: absolute;
   width: 3vw;
