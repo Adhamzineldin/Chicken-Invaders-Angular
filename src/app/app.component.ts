@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   static api = 'http://localhost:3000/api';
   domain: string = '';
   backendPort = '1338';
-  frontendPort = '80';
+  frontendPort = '4300';
 
 
   constructor(@Inject(DOCUMENT) private document: Document, private titleService: Title,
