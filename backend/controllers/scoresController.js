@@ -2,7 +2,9 @@ const Score = require('../models/scoreModel');
 
 const getScores = async (req, res) => {
   try {
-    const scores = await Score.find();
+    const scores = await Score.aggregate([
+      {$sort: {score: -1}}
+    ]);
     res.json(scores);
   } catch (error) {
     console.error(error);
@@ -13,15 +15,16 @@ const getScores = async (req, res) => {
 const getScoresByDifficulty = async (req, res) => {
   try {
     const {difficulty} = req.params;
-    const scores = await Score.find({difficulty});
-    const orderedScores = scores.sort((a, b) => b.score - a.score);
+    const scores = await Score.aggregate([
+      {$match: {difficulty}},
+      {$sort: {score: -1}}
+    ]);
     res.json(scores);
   } catch (error) {
     console.error(error);
     res.status(500).json({message: 'Internal server error'});
   }
 };
-
 
 const postScore = async (req, res) => {
   try {

@@ -18,7 +18,7 @@ import {IpService} from "../ip.service";
 })
 export class GameComponent implements OnInit {
   score: number = 0;
-  rocketStep: number = 0.3;
+  rocketStep: number = 0.2;
   canShoot: boolean = true;
   shootCooldown: number = 100;
   eggIntervalId: any[] = [];
