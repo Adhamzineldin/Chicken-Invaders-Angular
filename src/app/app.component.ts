@@ -29,23 +29,13 @@ export class AppComponent implements OnInit {
   frontendPort = '80';
 
 
-  constructor(@Inject(DOCUMENT) private document: Document, private titleService: Title,
+  constructor(private titleService: Title,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private ipService: IpService) {
-    this.setBaseHref();
+
   }
 
-
-  private setBaseHref(): void {
-    const base = this.document.querySelector('base');
-    this.domain = window.location.hostname;
-    if (base) {
-      if (this.domain !== "localhost") {
-        base.setAttribute('href', `/app${this.frontendPort}/`);
-      }
-    }
-  }
 
   ngOnInit() {
 
