@@ -63,7 +63,7 @@ export class GameOverComponent {
     };
 
     try {
-      let response = await fetch(`${AppComponent.api}/scores`, {
+      let response = await fetch(`http://${AppComponent.ipAddress}:1338/api/scores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

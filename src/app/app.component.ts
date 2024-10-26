@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {GameComponent} from "./game/game.component";
 import {MenuComponent} from "./menu/menu.component";
@@ -6,8 +6,6 @@ import {GameOverComponent} from "./game-over/game-over.component";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from 'rxjs/operators';
 import {IpService} from "./ip.service";
-import {DOCUMENT} from "@angular/common";
-
 
 @Component({
   selector: 'app-root',
@@ -23,38 +21,14 @@ export class AppComponent implements OnInit {
   static gameObject: (GameComponent | any);
   static name: string;
   static ipAddress: any;
-  static api = 'http://localhost:3000/api';
-  domain: string = '';
-  backendPort = '1338';
-  frontendPort = '80';
 
-
-  constructor(@Inject(DOCUMENT) private document: Document, private titleService: Title,
+  constructor(private titleService: Title,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private ipService: IpService) {
-    this.setBaseHref();
-  }
-
-
-  private setBaseHref(): void {
-    const base = this.document.querySelector('base');
-    this.domain = window.location.hostname;
-    if (base) {
-      if (this.domain !== "localhost") {
-        base.setAttribute('href', `/app${this.frontendPort}/`);
-      }
-    }
   }
 
   ngOnInit() {
-
-    this.domain = window.location.hostname;
-    if (this.domain === "localhost") {
-      AppComponent.api = `http://localhost:${this.backendPort}/api`;
-    } else {
-      AppComponent.api = `https://${this.domain}/app${this.backendPort}/api`;
-    }
 
     this.router.events
       .pipe(
@@ -93,7 +67,7 @@ export class AppComponent implements OnInit {
   }
 
   static getIpAddress() {
-    return AppComponent.api;
+    return AppComponent.ipAddress;
   }
 
   protected readonly GameComponent = GameComponent;
