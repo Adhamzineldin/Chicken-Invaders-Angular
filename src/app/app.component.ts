@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
     if (this.domain === "localhost") {
       AppComponent.api = `http://localhost:${this.backendPort}/api`;
     } else {
-      AppComponent.api = `https://${this.domain}/app${this.backendPort}/api`;
+      AppComponent.api = `https://${this.domain}:${this.backendPort}/api`;
     }
 
     this.router.events
